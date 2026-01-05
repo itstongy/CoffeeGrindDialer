@@ -16,4 +16,4 @@ Retro starfighter inspired helper for tracking espresso shots, nudging grinder s
 2. Fill out your grinder details and shot data, then click **Evaluate Shot**.
 3. The gauges, recommendations, and shot log update instantly; the log sticks around via `localStorage`.
 
-No build step or backend needed—just static HTML/CSS/JS. Update `CLAUDE.md` whenever the logic changes to keep future readers aligned.
+No build step or backend needed—just static HTML/CSS/JS.
