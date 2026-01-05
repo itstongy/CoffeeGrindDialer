@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coffee Grinder Dialer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Coffee Grinder Dialer</h1>
+      <p>Retro nav-computer vibes for charting espresso shots and nudging your grinder toward perfect extraction.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="grinder-setup">
+      <h2 id="grinder-setup">Grinder Setup</h2>
+      <div class="grid grid-3">
+        <label>
+          Grinder / Scale Name
+          <input type="text" id="scaleName" placeholder="e.g., Baratza Sette" />
+        </label>
+        <label>
+          Lowest Step
+          <input type="number" id="scaleMin" value="0" />
+        </label>
+        <label>
+          Highest Step
+          <input type="number" id="scaleMax" value="40" />
+        </label>
+      </div>
+      <div class="grid grid-2">
+        <label>
+          Step Size Description
+          <input type="text" id="stepDescription" placeholder="Microns, detents, clicks…" />
+        </label>
+        <label>
+          Target Ratio (Yield / Dose)
+          <input type="number" id="targetRatio" step="0.1" value="2.0" />
+        </label>
+      </div>
+      <div class="slider-wrapper">
+        <div class="slider-label">
+          <span>Current Grind Step</span>
+          <span id="currentGrindValue">20</span>
+        </div>
+        <input type="range" id="currentGrind" min="0" max="40" value="20" />
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="shot-inputs">
+      <h2 id="shot-inputs">Shot Inputs</h2>
+      <div class="grid grid-3">
+        <label>
+          Dose (g)
+          <input type="number" id="dose" min="0" step="0.1" placeholder="18" />
+        </label>
+        <label>
+          Yield (g)
+          <input type="number" id="yield" min="0" step="0.1" placeholder="36" />
+        </label>
+        <label>
+          Brew Time (s)
+          <input type="number" id="brewTime" min="0" step="1" placeholder="30" />
+        </label>
+      </div>
+      <div class="grid grid-3">
+        <label>
+          Grind Time (s)
+          <input type="number" id="grindTime" min="0" step="1" placeholder="5" />
+        </label>
+        <label>
+          Water Temp (°C)
+          <input type="number" id="waterTemp" min="0" step="0.5" placeholder="93" />
+        </label>
+        <label>
+          Brew Pressure (bar)
+          <input type="number" id="pressure" min="0" step="0.1" placeholder="9" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="shot-feedback">
+      <h2 id="shot-feedback">Shot Feedback</h2>
+      <div class="grid grid-3">
+        <label>
+          Channeling
+          <select id="channeling">
+            <option value="none">None</option>
+            <option value="some">A little</option>
+            <option value="lots">A lot</option>
+          </select>
+        </label>
+        <label>
+          Taste
+          <select id="taste">
+            <option value="balanced">Balanced</option>
+            <option value="sour">Sour / sharp</option>
+            <option value="bitter">Bitter / dry</option>
+          </select>
+        </label>
+        <label class="puck-slider">
+          <div class="slider-label">
+            <span>Puck Moisture Rating</span>
+            <span id="puckWetnessValue">5 · Balanced</span>
+          </div>
+          <input type="range" id="puckWetness" min="1" max="10" value="5" />
+          <div class="slider-scale">
+            <span>Soupy</span>
+            <span>Balanced</span>
+            <span>Desert dry</span>
+          </div>
+        </label>
+      </div>
+      <label>
+        Notes
+        <textarea id="notes" rows="2" placeholder="Crema, distribution, feel, etc."></textarea>
+      </label>
+      <button id="evaluate">Evaluate Shot</button>
+    </section>
+
+    <section class="card results" aria-live="polite">
+      <div class="results-main">
+        <h2>Dial-In Guidance</h2>
+        <p id="recommendation">Log a shot to get tailored guidance.</p>
+        <ul class="metrics">
+          <li><strong>Ratio</strong> <span id="ratioMetric">—</span></li>
+          <li><strong>Brew Time</strong> <span id="timeMetric">—</span></li>
+          <li><strong>Next Grind Step</strong> <span id="nextGrind">—</span></li>
+        </ul>
+      </div>
+      <div class="instrument-cluster">
+        <div class="gauge main-dial">
+          <div class="gauge-outer">
+            <div class="needle" id="gaugeNeedle"></div>
+            <div class="gauge-center">
+              <div class="gauge-score" id="gaugeScore">0%</div>
+              <p>Sweetness meter</p>
+            </div>
+          </div>
+          <p class="gauge-caption">Keep logging shots to fill the gauge toward a dialed-in extraction.</p>
+        </div>
+        <div class="sub-dials" aria-live="polite">
+          <div class="sub-dial">
+            <p>Pressure</p>
+            <div class="sub-dial-face">
+              <div class="sub-needle" id="pressureNeedle"></div>
+              <span id="pressureValue">—</span>
+            </div>
+          </div>
+          <div class="sub-dial">
+            <p>Puck Gauge</p>
+            <div class="sub-dial-face">
+              <div class="sub-needle" id="puckDialNeedle"></div>
+              <span id="puckDialValue">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="shot-history">
+      <h2 id="shot-history">Shot Log</h2>
+      <p class="muted">Each shot helps refine your grinder steps. Logs are saved locally so you can pick up where you left off.</p>
+      <div class="shot-list" id="shotList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      Crafted for GitHub Pages · No backend required
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
