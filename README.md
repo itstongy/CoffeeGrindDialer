@@ -1,5 +1,7 @@
 # Coffee Grinder Dialer
 
+Hosted Version: https://itstongy.github.io/CoffeeGrindDialer/
+
 Retro starfighter inspired helper for tracking espresso shots, nudging grinder settings, and keeping a vibe-heavy log that survives refreshes thanks to `localStorage`.
 
 ## Features
