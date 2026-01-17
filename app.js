@@ -15,8 +15,11 @@ const els = {
   pressure: document.getElementById('pressure'),
   channeling: document.getElementById('channeling'),
   taste: document.getElementById('taste'),
+  coffeeScreen: document.getElementById('coffeeScreen'),
   notes: document.getElementById('notes'),
   evaluate: document.getElementById('evaluate'),
+  resultsCard: document.querySelector('.card.results'),
+  evaluationBanner: document.getElementById('evaluationBanner'),
   recommendation: document.getElementById('recommendation'),
   ratioMetric: document.getElementById('ratioMetric'),
   timeMetric: document.getElementById('timeMetric'),
@@ -35,6 +38,13 @@ const els = {
 const state = {
   shots: [],
   lastId: 0,
+};
+
+const uiState = {
+  bannerTimeout: null,
+  highlightTimeout: null,
+  buttonTimeout: null,
+  evaluateLabel: null,
 };
 
 function parseNumber(value, fallback = null) {
@@ -148,6 +158,7 @@ function renderShots() {
     const shotNumber = entry.id || fallbackNumber;
     const puckLabel = entry.puckDescription || 'n/a';
     const puckValue = entry.puckWetness != null ? `${entry.puckWetness}/10` : 'n/a';
+    const screenLabel = entry.coffeeScreen == null ? 'n/a' : entry.coffeeScreen ? 'On' : 'Off';
 
     card.innerHTML = `
       <header>
@@ -155,7 +166,7 @@ function renderShots() {
         <span>${timeString}</span>
       </header>
       <p><strong>Ratio:</strong> ${formatNumber(entry.ratio)}:1 · <strong>Grind:</strong> ${formatNumber(entry.currentGrind, 1)} → ${formatNumber(entry.nextGrind, 1)}</p>
-      <p><strong>Brew:</strong> ${entry.brewTime ? `${formatNumber(entry.brewTime, 0)}s` : 'n/a'} · <strong>Puck:</strong> ${puckLabel} (${puckValue}) · <strong>Taste:</strong> ${entry.taste || 'n/a'}</p>
+      <p><strong>Brew:</strong> ${entry.brewTime ? `${formatNumber(entry.brewTime, 0)}s` : 'n/a'} · <strong>Puck:</strong> ${puckLabel} (${puckValue}) · <strong>Screen:</strong> ${screenLabel} · <strong>Taste:</strong> ${entry.taste || 'n/a'}</p>
       ${entry.notes ? `<p class="muted">${entry.notes}</p>` : ''}
     `;
 
@@ -187,6 +198,52 @@ function restoreShots() {
   }
 }
 
+function announceEvaluation() {
+  if (els.evaluationBanner) {
+    els.evaluationBanner.textContent = 'Shot logged. Guidance updated.';
+    els.evaluationBanner.classList.add('is-visible');
+    if (uiState.bannerTimeout) {
+      clearTimeout(uiState.bannerTimeout);
+    }
+    uiState.bannerTimeout = setTimeout(() => {
+      els.evaluationBanner.classList.remove('is-visible');
+    }, 2600);
+  }
+
+  if (els.resultsCard) {
+    els.resultsCard.classList.remove('is-highlighted');
+    void els.resultsCard.offsetWidth;
+    els.resultsCard.classList.add('is-highlighted');
+    if (uiState.highlightTimeout) {
+      clearTimeout(uiState.highlightTimeout);
+    }
+    uiState.highlightTimeout = setTimeout(() => {
+      els.resultsCard.classList.remove('is-highlighted');
+    }, 1600);
+
+    if (window.matchMedia('(max-width: 700px)').matches) {
+      els.resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  if (els.evaluate) {
+    if (!uiState.evaluateLabel) {
+      uiState.evaluateLabel = els.evaluate.textContent;
+    }
+    els.evaluate.textContent = 'Logged!';
+    els.evaluate.classList.add('is-confirmed');
+    els.evaluate.disabled = true;
+    if (uiState.buttonTimeout) {
+      clearTimeout(uiState.buttonTimeout);
+    }
+    uiState.buttonTimeout = setTimeout(() => {
+      els.evaluate.textContent = uiState.evaluateLabel;
+      els.evaluate.classList.remove('is-confirmed');
+      els.evaluate.disabled = false;
+    }, 1200);
+  }
+}
+
 function evaluateShot() {
   const dose = parseNumber(els.dose.value);
   const yieldVal = parseNumber(els.yield.value);
@@ -198,6 +255,7 @@ function evaluateShot() {
   const pressure = parseNumber(els.pressure.value);
   const puckWetness = parseNumber(els.puckWetness.value, 5);
   const puckDescriptor = describePuckWetness(puckWetness);
+  const coffeeScreen = Boolean(els.coffeeScreen?.checked);
 
   if (!dose || !yieldVal) {
     els.recommendation.textContent = 'Dose and yield are required to evaluate a shot.';
@@ -314,10 +372,13 @@ function evaluateShot() {
     puckWetness,
     puckDescription: puckDescriptor.label,
     channeling,
+    coffeeScreen,
     notes: els.notes.value.trim(),
     targetRatio,
     score: avgScore,
   });
+
+  announceEvaluation();
 }
 
 function logShot(entry) {

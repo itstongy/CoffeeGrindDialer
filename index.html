@@ -119,6 +119,10 @@
           </div>
         </label>
       </div>
+      <label class="checkbox-field">
+        <input type="checkbox" id="coffeeScreen" />
+        <span>Using a coffee screen</span>
+      </label>
       <label>
         Notes
         <textarea id="notes" rows="2" placeholder="Crema, distribution, feel, etc."></textarea>
@@ -129,6 +133,7 @@
     <section class="card results" aria-live="polite">
       <div class="results-main">
         <h2>Dial-In Guidance</h2>
+        <div class="evaluation-banner" id="evaluationBanner" role="status" aria-live="polite"></div>
         <p id="recommendation">Log a shot to get tailored guidance.</p>
         <ul class="metrics">
           <li><strong>Ratio</strong> <span id="ratioMetric">—</span></li>
@@ -139,25 +144,28 @@
       <div class="instrument-cluster">
         <div class="gauge main-dial">
           <div class="gauge-outer">
+            <div class="target-arc main-target" aria-hidden="true"></div>
             <div class="needle" id="gaugeNeedle"></div>
             <div class="gauge-center">
               <div class="gauge-score" id="gaugeScore">0%</div>
               <p>Sweetness meter</p>
             </div>
           </div>
-          <p class="gauge-caption">Keep logging shots to fill the gauge toward a dialed-in extraction.</p>
+          <p class="gauge-caption">Aim for the teal band; higher sweetness is better.</p>
         </div>
         <div class="sub-dials" aria-live="polite">
           <div class="sub-dial">
-            <p>Pressure</p>
+            <p>Pressure (target 8-10 bar)</p>
             <div class="sub-dial-face">
+              <div class="target-arc pressure-target" aria-hidden="true"></div>
               <div class="sub-needle" id="pressureNeedle"></div>
               <span id="pressureValue">—</span>
             </div>
           </div>
           <div class="sub-dial">
-            <p>Puck Gauge</p>
+            <p>Puck Gauge (target 5-7)</p>
             <div class="sub-dial-face">
+              <div class="target-arc puck-target" aria-hidden="true"></div>
               <div class="sub-needle" id="puckDialNeedle"></div>
               <span id="puckDialValue">—</span>
             </div>
